@@ -112,6 +112,7 @@
         <div id="white-buttons">
             <button class="key clickable" onclick="buscarPokemon()">Buscar</button>
             <button class="key clickable" onclick="agregarPokemon()">Agregar</button>
+            <button class="key clickable" onclick="abrirBatallaDesdeActual()" style="background-color: #ff9800;">⚡ Batalla</button>
         </div>
         <!-- Right side grey buttons -->
         <div id="grey-buttons">
@@ -175,6 +176,53 @@
         <br>
         <button onclick="cerrarModal()">Cancelar</button>
         <button onclick="editarPokemon()">Guardar</button>
+    </div>
+</div>
+
+<!-- MODAL DE BATALLA -->
+<div id="modal-batalla" class="modal">
+    <div class="modal-batalla-content">
+        <h2 style="text-align: center; color: #dd0b2d;">⚡ BATALLA POKÉMON ⚡</h2>
+        
+        <div class="batalla-container">
+            <!-- Pokémon 1 -->
+            <div class="pokemon-batalla">
+                <div id="batalla-pokemon1-info">
+                    <h3 id="batalla-p1-nombre"></h3>
+                    <img id="batalla-p1-imagen" src="" alt="">
+                    <p>HP: <span id="batalla-p1-hp"></span></p>
+                    <p>ATK: <span id="batalla-p1-atk"></span></p>
+                    <p>DEF: <span id="batalla-p1-def"></span></p>
+                    <p>VEL: <span id="batalla-p1-vel"></span></p>
+                </div>
+            </div>
+
+            <!-- VS -->
+            <div class="batalla-vs">VS</div>
+
+            <!-- Pokémon 2 -->
+            <div class="pokemon-batalla">
+                <div id="batalla-pokemon2-info">
+                    <h3 id="batalla-p2-nombre"></h3>
+                    <img id="batalla-p2-imagen" src="" alt="">
+                    <p>HP: <span id="batalla-p2-hp"></span></p>
+                    <p>ATK: <span id="batalla-p2-atk"></span></p>
+                    <p>DEF: <span id="batalla-p2-def"></span></p>
+                    <p>VEL: <span id="batalla-p2-vel"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="batalla-resultado" style="display: none; text-align: center; margin-top: 20px;">
+            <h2 id="resultado-texto" style="color: #dd0b2d; font-size: 24px;"></h2>
+        </div>
+
+        <!-- Botones de control -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="iniciarBatalla()" id="btn-iniciar-batalla" style="background-color: #dd0b2d; color: white; padding: 10px 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">⚡ Iniciar Batalla</button>
+            <button onclick="cerrarBatalla()" style="background-color: #999; color: white; padding: 10px 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Cerrar</button>
+        </div>
     </div>
 </div>
 
