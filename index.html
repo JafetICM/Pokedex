@@ -57,10 +57,10 @@
             <div class="cross cross-bottom clickable" onclick="asignarNumero(this)">
                 <div class="arrow arrow-bottom"></div>
             </div>
-            <div class="cross cross-left clickable">
+            <div class="cross cross-left clickable" onclick="rotarIzquierda()">
                 <div class="arrow arrow-left"></div>
             </div>
-            <div class="cross cross-right clickable">
+            <div class="cross cross-right clickable" onclick="rotarDerecha()">
                 <div class="arrow arrow-right"></div>
             </div>
         </div>
@@ -112,7 +112,6 @@
         <div id="white-buttons">
             <button class="key clickable" onclick="buscarPokemon()">Buscar</button>
             <button class="key clickable" onclick="agregarPokemon()">Agregar</button>
-            <button class="key clickable" onclick="abrirBatallaDesdeActual()" style="background-color: #ff9800;">⚡ Batalla</button>
         </div>
         <!-- Right side grey buttons -->
         <div id="grey-buttons">
@@ -213,16 +212,7 @@
             </div>
         </div>
 
-        <!-- Resultado -->
-        <div id="batalla-resultado" style="display: none; text-align: center; margin-top: 20px;">
-            <h2 id="resultado-texto" style="color: #dd0b2d; font-size: 24px;"></h2>
-        </div>
-
-        <!-- Botones de control -->
-        <div style="text-align: center; margin-top: 20px;">
-            <button onclick="iniciarBatalla()" id="btn-iniciar-batalla" style="background-color: #dd0b2d; color: white; padding: 10px 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">⚡ Iniciar Batalla</button>
-            <button onclick="cerrarBatalla()" style="background-color: #999; color: white; padding: 10px 20px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Cerrar</button>
-        </div>
+        <!-- fin modal-batalla removido -->
     </div>
 </div>
 

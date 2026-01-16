@@ -9,6 +9,9 @@ let indexActual = 1;
 
 // Variable para almacenar el número ingresado en el teclado
 let numeroIngresado = '';
+// Estado de orientación de la imagen y cache de sprites
+let facing = 'front';
+let lastSprites = { front: null, back: null };
 
 // Obtener datos del pokémon por número
 async function obtenerPokemon(numero) {
@@ -28,6 +31,10 @@ function mostrarPokemon(pokemon) {
     // Actualizar pantalla izquierda (imagen)
     document.getElementById('screen-left-image').src = pokemon.sprites.front_default || 'profesor.svg';
     document.getElementById('screen-left-image').alt = pokemon.name;
+    // Guardar sprites y resetear orientación
+    lastSprites.front = pokemon.sprites.front_default || null;
+    lastSprites.back = pokemon.sprites.back_default || null;
+    facing = 'front';
 
     // Actualizar altura y peso
     document.getElementById('pokemon-height').textContent = (pokemon.height / 10).toFixed(1) + ' m';
@@ -56,6 +63,45 @@ function mostrarPokemon(pokemon) {
 
     // Guardar índice actual
     indexActual = pokemon.id;
+}
+
+// Rotación: gira la imagen 360° y cambia el sprite a la mitad (front <-> back)
+async function rotatePokemon() {
+    const img = document.getElementById('screen-left-image');
+    const duration = 800; // ms
+
+    // Determinar sprites a usar
+    const front = lastSprites.front || img.src;
+    const back = lastSprites.back || front;
+
+    // Reiniciar animación si está activa
+    img.classList.remove('pokemon-rotando');
+    void img.offsetWidth; // reflow
+    img.classList.add('pokemon-rotando');
+
+    // Cambiar sprite a la mitad de la animación
+    setTimeout(() => {
+        if (facing === 'front') {
+            img.src = back || front;
+            facing = 'back';
+        } else {
+            img.src = front || back;
+            facing = 'front';
+        }
+    }, duration / 2);
+
+    // Limpiar clase al terminar
+    setTimeout(() => {
+        img.classList.remove('pokemon-rotando');
+    }, duration + 50);
+}
+
+function rotarIzquierda() {
+    rotatePokemon();
+}
+
+function rotarDerecha() {
+    rotatePokemon();
 }
 
 // Mostrar tipos con imágenes
@@ -267,116 +313,7 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// FUNCIÓN DE BATALLA
-let pokemonBatalla1 = null;
-let pokemonBatalla2 = null;
-
-// Obtener datos del Pokémon para batalla
-async function obtenerPokemonBatalla(numero) {
-    try {
-        const response = await fetch(API_URL + numero);
-        if (!response.ok) throw new Error('Pokémon no encontrado');
-        const data = await response.json();
-        return {
-            id: data.id,
-            nombre: data.name,
-            imagen: data.sprites.front_default,
-            hp: data.stats.find(stat => stat.stat.name === 'hp')?.base_stat || 0,
-            ataque: data.stats.find(stat => stat.stat.name === 'attack')?.base_stat || 0,
-            defensa: data.stats.find(stat => stat.stat.name === 'defense')?.base_stat || 0,
-            velocidad: data.stats.find(stat => stat.stat.name === 'speed')?.base_stat || 0
-        };
-    } catch (error) {
-        alert('Error: ' + error.message);
-        return null;
-    }
-}
-
-// Abrir modal de batalla
-async function abrirBatalla(numeroPokemon) {
-    pokemonBatalla1 = await obtenerPokemonBatalla(indexActual);
-    pokemonBatalla2 = await obtenerPokemonBatalla(numeroPokemon);
-    
-    if (pokemonBatalla1 && pokemonBatalla2) {
-        mostrarInfoBatalla();
-        document.getElementById('modal-batalla').style.display = 'block';
-    }
-}
-
-// Batalla desde Pokémon actual
-async function abrirBatallaDesdeActual() {
-    pokemonBatalla1 = await obtenerPokemonBatalla(indexActual);
-    const pokemonAleatorio = Math.floor(Math.random() * 898) + 1;
-    pokemonBatalla2 = await obtenerPokemonBatalla(pokemonAleatorio);
-    
-    if (pokemonBatalla1 && pokemonBatalla2) {
-        mostrarInfoBatalla();
-        document.getElementById('modal-batalla').style.display = 'block';
-    }
-}
-
-// Mostrar información de batalla
-function mostrarInfoBatalla() {
-    // Pokémon 1
-    document.getElementById('batalla-p1-nombre').textContent = pokemonBatalla1.nombre.toUpperCase();
-    document.getElementById('batalla-p1-imagen').src = pokemonBatalla1.imagen || 'profesor.svg';
-    document.getElementById('batalla-p1-hp').textContent = pokemonBatalla1.hp;
-    document.getElementById('batalla-p1-atk').textContent = pokemonBatalla1.ataque;
-    document.getElementById('batalla-p1-def').textContent = pokemonBatalla1.defensa;
-    document.getElementById('batalla-p1-vel').textContent = pokemonBatalla1.velocidad;
-
-    // Pokémon 2
-    document.getElementById('batalla-p2-nombre').textContent = pokemonBatalla2.nombre.toUpperCase();
-    document.getElementById('batalla-p2-imagen').src = pokemonBatalla2.imagen || 'profesor.svg';
-    document.getElementById('batalla-p2-hp').textContent = pokemonBatalla2.hp;
-    document.getElementById('batalla-p2-atk').textContent = pokemonBatalla2.ataque;
-    document.getElementById('batalla-p2-def').textContent = pokemonBatalla2.defensa;
-    document.getElementById('batalla-p2-vel').textContent = pokemonBatalla2.velocidad;
-
-    // Ocultar resultado
-    document.getElementById('batalla-resultado').style.display = 'none';
-    document.getElementById('btn-iniciar-batalla').style.display = 'inline-block';
-}
-
-// Iniciar batalla y calcular ganador
-function iniciarBatalla() {
-    if (!pokemonBatalla1 || !pokemonBatalla2) return;
-
-    // Calcular puntuación de batalla basada en stats
-    const poder1 = (pokemonBatalla1.hp * 0.2) + 
-                   (pokemonBatalla1.ataque * 0.35) + 
-                   (pokemonBatalla1.defensa * 0.2) + 
-                   (pokemonBatalla1.velocidad * 0.25);
-
-    const poder2 = (pokemonBatalla2.hp * 0.2) + 
-                   (pokemonBatalla2.ataque * 0.35) + 
-                   (pokemonBatalla2.defensa * 0.2) + 
-                   (pokemonBatalla2.velocidad * 0.25);
-
-    // Agregar algo de aleatoriedad (15%)
-    const poder1Random = poder1 * (0.85 + Math.random() * 0.3);
-    const poder2Random = poder2 * (0.85 + Math.random() * 0.3);
-
-    let resultadoTexto;
-    if (poder1Random > poder2Random) {
-        resultadoTexto = `🏆 ¡${pokemonBatalla1.nombre.toUpperCase()} GANA LA BATALLA! 🏆`;
-    } else if (poder2Random > poder1Random) {
-        resultadoTexto = `🏆 ¡${pokemonBatalla2.nombre.toUpperCase()} GANA LA BATALLA! 🏆`;
-    } else {
-        resultadoTexto = `⚔️ ¡ES UN EMPATE! ⚔️`;
-    }
-
-    document.getElementById('resultado-texto').textContent = resultadoTexto;
-    document.getElementById('batalla-resultado').style.display = 'block';
-    document.getElementById('btn-iniciar-batalla').style.display = 'none';
-}
-
-// Cerrar modal de batalla
-function cerrarBatalla() {
-    document.getElementById('modal-batalla').style.display = 'none';
-    pokemonBatalla1 = null;
-    pokemonBatalla2 = null;
-}
+// Batalla removida: funciones y variables asociadas eliminadas
 
 // Inicializar: cargar pokémon #1 y actualizar tabla
 window.addEventListener('DOMContentLoaded', function() {
